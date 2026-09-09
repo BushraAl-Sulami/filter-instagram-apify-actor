@@ -1,0 +1,24 @@
+{
+  "title": "Filter Instagram Restaurants",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "datasetId": {
+      "title": "Source Dataset ID",
+      "type": "string",
+      "description": "The Apify Dataset ID containing the restaurant records to filter.",
+      "editor": "textfield",
+      "default": ""
+    },
+    "instagramField": {
+      "title": "Instagram URL field",
+      "type": "string",
+      "description": "Name of the field containing the Instagram URL.",
+      "editor": "textfield",
+      "default": "instagramUrl"
+    }
+  },
+  "required": [
+    "datasetId"
+  ]
+}
