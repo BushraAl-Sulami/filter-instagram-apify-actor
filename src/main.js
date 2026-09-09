@@ -6,7 +6,8 @@ try {
     const input = await Actor.getInput();
 
     const datasetId = String(input?.datasetId ?? '').trim();
-    const instagramField = String(input?.instagramField ?? 'instagramUrl').trim() || 'instagramUrl';
+    const instagramField =
+        String(input?.instagramField ?? 'instagramUrl').trim() || 'instagramUrl';
 
     console.log(`Source Dataset: ${datasetId}`);
     console.log(`Instagram field: ${instagramField}`);
@@ -23,6 +24,7 @@ try {
     let kept = 0;
     let removed = 0;
     let offset = 0;
+
     const pageSize = 1000;
 
     while (true) {
@@ -33,27 +35,38 @@ try {
 
         const items = page.items ?? [];
 
-        if (items.length === 0) break;
+        if (items.length === 0) {
+            break;
+        }
 
         for (const item of items) {
-            total += 1;
+            total++;
 
             const raw = item?.[instagramField];
             const instagram = raw == null ? '' : String(raw).trim();
 
-            if (instagram && instagram.toLowerCase() !== 'null') {
+            if (
+                instagram &&
+                instagram.toLowerCase() !== 'null'
+            ) {
+                // Instagram موجود → نحفظ الصف كامل
                 await Actor.pushData(item);
-                kept += 1;
+                kept++;
             } else {
-                removed += 1;
+                // Instagram غير موجود → نتجاهل الصف كامل
+                removed++;
             }
         }
 
-        console.log(`Processed ${total}: kept ${kept}, removed ${removed}`);
+        console.log(
+            `Processed ${total}: kept ${kept}, removed ${removed}`
+        );
 
         offset += items.length;
 
-        if (items.length < pageSize) break;
+        if (items.length < pageSize) {
+            break;
+        }
     }
 
     const summary = {
@@ -64,14 +77,22 @@ try {
         removedItems: removed,
     };
 
-    await Actor.setValue('SUMMARY', summary, {
-        contentType: 'application/json',
-    });
+    await Actor.setValue(
+        'SUMMARY',
+        JSON.stringify(summary, null, 2),
+        {
+            contentType: 'application/json',
+        }
+    );
 
-    console.log(`Finished. Total: ${total}, kept: ${kept}, removed: ${removed}.`);
+    console.log(
+        `Finished. Total: ${total}, kept: ${kept}, removed: ${removed}.`
+    );
+
 } catch (error) {
     console.error('Actor failed:', error);
     throw error;
+
 } finally {
     await Actor.exit();
 }
