@@ -4,11 +4,12 @@
   "schemaVersion": 1,
   "properties": {
     "datasetId": {
-      "title": "Source Dataset ID",
+      "title": "Source Dataset",
       "type": "string",
-      "description": "The Apify Dataset ID containing the restaurant records to filter.",
-      "editor": "textfield",
-      "default": ""
+      "description": "Choose the Apify Dataset containing the restaurant records to filter.",
+      "editor": "resourcePicker",
+      "resourceType": "dataset",
+      "resourcePermissions": ["READ"]
     },
     "instagramField": {
       "title": "Instagram URL field",
