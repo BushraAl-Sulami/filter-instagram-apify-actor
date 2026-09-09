@@ -22,23 +22,38 @@ try {
     let total = 0;
     let kept = 0;
     let removed = 0;
+    let offset = 0;
+    const pageSize = 1000;
 
-    for await (const item of sourceDataset.iterateItems()) {
-        total += 1;
+    while (true) {
+        const page = await sourceDataset.getData({
+            offset,
+            limit: pageSize,
+        });
 
-        const raw = item?.[instagramField];
-        const instagram = raw == null ? '' : String(raw).trim();
+        const items = page.items ?? [];
 
-        if (instagram && instagram.toLowerCase() !== 'null') {
-            await Actor.pushData(item);
-            kept += 1;
-        } else {
-            removed += 1;
+        if (items.length === 0) break;
+
+        for (const item of items) {
+            total += 1;
+
+            const raw = item?.[instagramField];
+            const instagram = raw == null ? '' : String(raw).trim();
+
+            if (instagram && instagram.toLowerCase() !== 'null') {
+                await Actor.pushData(item);
+                kept += 1;
+            } else {
+                removed += 1;
+            }
         }
 
-        if (total % 100 === 0) {
-            console.log(`Processed ${total}: kept ${kept}, removed ${removed}`);
-        }
+        console.log(`Processed ${total}: kept ${kept}, removed ${removed}`);
+
+        offset += items.length;
+
+        if (items.length < pageSize) break;
     }
 
     const summary = {
@@ -46,11 +61,11 @@ try {
         instagramField,
         totalItems: total,
         keptItems: kept,
-        removedItems: removed
+        removedItems: removed,
     };
 
     await Actor.setValue('SUMMARY', summary, {
-        contentType: 'application/json'
+        contentType: 'application/json',
     });
 
     console.log(`Finished. Total: ${total}, kept: ${kept}, removed: ${removed}.`);
