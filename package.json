@@ -1,0 +1,16 @@
+{
+  "name": "filter-instagram-restaurants",
+  "version": "1.0.0",
+  "description": "Apify Actor that copies only dataset items with a non-empty Instagram URL.",
+  "type": "module",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "node src/main.js"
+  },
+  "dependencies": {
+    "apify": "^3.4.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
